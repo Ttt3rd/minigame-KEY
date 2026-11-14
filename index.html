@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101722">
+  <title>KEY//BREAK - 鍵開けミニゲーム集</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" id="brandHome">KEY<span>//</span>BREAK</a>
+    <div class="top-meta">LOCKPICKING ARCADE <span class="live-dot"></span></div>
+  </header>
+  <main id="app" class="app-shell">
+    <section id="screen-home" class="screen active">
+      <div class="hero">
+        <p class="eyebrow">A COLLECTION OF LOCK CHALLENGES</p>
+        <h1>静寂を破れ。<br><span>その手で解錠せよ。</span></h1>
+        <p class="lead">感覚・判断・タイミングを駆使して、さまざまな鍵を攻略しよう。</p>
+        <div class="hero-actions">
+          <button class="btn primary" data-action="single">SINGLE GAME <small>ひとつのゲームに挑戦</small></button>
+          <button class="btn secondary" data-action="random">RANDOM GAME <small>連続でゲームに挑戦</small></button>
+        </div>
+      </div>
+      <div class="home-bottom">
+        <button class="text-button" data-action="records">RECORDS / 記録</button>
+        <button class="text-button" data-action="settings">SETTINGS / 設定</button>
+      </div>
+    </section>
+
+    <section id="screen-game-select" class="screen">
+      <div class="section-head"><p class="eyebrow">SELECT YOUR LOCK</p><h2>ゲームを選択</h2><p>挑戦する鍵を選んでください。</p></div>
+      <div class="game-cards">
+        <button class="game-card selected" data-game="picking"><span class="card-number">01</span><span class="card-icon">⌁</span><strong>ピッキング</strong><small>角度を探り、危険を管理して解錠する。</small></button>
+        <button class="game-card" data-game="pendulum"><span class="card-number">02</span><span class="card-icon">◉</span><strong>振り子ロック</strong><small>往復する針を見極め、タイミングよく止める。</small></button>
+      </div>
+      <div class="actions-row"><button class="btn secondary" data-action="home">戻る</button><button class="btn primary" data-action="to-mode">プレイタイプへ</button></div>
+    </section>
+
+    <section id="screen-mode-select" class="screen">
+      <div class="section-head"><p class="eyebrow">CHOOSE YOUR RULESET</p><h2>プレイタイプ</h2></div>
+      <div class="mode-list">
+        <button class="mode-card" data-mode="LT"><b>LT</b><span><strong>LAST TRY</strong><small>失敗するまでステージを進める。時間制限あり。</small></span><i>→</i></button>
+        <button class="mode-card" data-mode="TA"><b>TA</b><span><strong>TIME ATTACK</strong><small>制限時間内にスコアを稼ぐ。難易度は成績に応じて変化。</small></span><i>→</i></button>
+        <button class="mode-card" data-mode="FR"><b>FR</b><span><strong>FREE</strong><small>時間や失敗条件を気にせず練習する。</small></span><i>→</i></button>
+      </div>
+      <div class="actions-row"><button class="btn secondary" data-action="back-select">戻る</button></div>
+    </section>
+
+    <section id="screen-random-filter" class="screen">
+      <div class="section-head"><p class="eyebrow">RANDOM GAME</p><h2>ゲームフィルター</h2><p>ランダム選択の対象にするゲームを選択してください。</p></div>
+      <div class="filter-list">
+        <label><input type="checkbox" value="picking" checked> ピッキング</label>
+        <label><input type="checkbox" value="pendulum" checked> 振り子ロック</label>
+      </div>
+      <div class="actions-row"><button class="btn secondary" data-action="home">戻る</button><button class="btn primary" data-action="random-to-mode">プレイタイプへ</button></div>
+    </section>
+
+    <section id="screen-game" class="screen">
+      <div class="game-hud">
+        <div><span class="hud-label">MODE</span><b id="hud-mode">LT</b></div>
+        <div><span class="hud-label">STAGE</span><b id="hud-stage">01</b></div>
+        <div><span class="hud-label">SCORE</span><b id="hud-score">0</b></div>
+        <div><span class="hud-label">TIME</span><b id="hud-time">--</b></div>
+        <button class="pause-btn" id="pauseBtn" aria-label="一時停止">Ⅱ</button>
+      </div>
+      <div class="game-title"><span class="eyebrow" id="game-kicker">LOCK CHALLENGE 01</span><h2 id="game-name">ピッキング</h2><p id="game-instruction">マウスまたはタッチで角度を調整してください。</p></div>
+      <div id="game-mount" class="game-mount"></div>
+      <div class="game-footer"><span id="game-status">READY</span><span id="game-progress"></span></div>
+    </section>
+
+    <section id="screen-choice" class="screen">
+      <div class="section-head"><p class="eyebrow">NEXT CHALLENGE</p><h2>次のゲームを選択</h2><p>次に挑戦する鍵を選んでください。</p></div>
+      <div class="game-cards compact">
+        <button class="game-card" data-next-game="picking"><span class="card-number">01</span><span class="card-icon">⌁</span><strong>ピッキング</strong></button>
+        <button class="game-card" data-next-game="pendulum"><span class="card-number">02</span><span class="card-icon">◉</span><strong>振り子ロック</strong></button>
+      </div>
+    </section>
+
+    <section id="screen-result" class="screen">
+      <p class="eyebrow">SESSION REPORT</p><h2 id="result-title">解錠成功</h2>
+      <div class="result-score"><span>FINAL SCORE</span><strong id="result-score">0</strong></div>
+      <div id="result-details" class="result-details"></div>
+      <div class="actions-row"><button class="btn secondary" data-action="home">ホームへ</button><button class="btn primary" id="retryBtn">もう一度</button></div>
+    </section>
+
+    <section id="screen-records" class="screen">
+      <div class="section-head"><p class="eyebrow">YOUR HISTORY</p><h2>プレイ記録</h2></div>
+      <div id="records-content" class="records-grid"></div>
+      <div class="actions-row"><button class="btn secondary" data-action="home">ホームへ</button><button class="btn danger" id="clearRecords">記録を消去</button></div>
+    </section>
+
+    <section id="screen-settings" class="screen">
+      <div class="section-head"><p class="eyebrow">PREFERENCES</p><h2>設定</h2></div>
+      <div class="settings-panel">
+        <label class="setting-row"><span>効果音</span><input id="soundToggle" type="checkbox" checked></label>
+        <label class="setting-row"><span>画面の揺れ</span><input id="shakeToggle" type="checkbox" checked></label>
+        <p class="muted">設定はこのブラウザに保存されます。</p>
+      </div>
+      <div class="actions-row"><button class="btn secondary" data-action="home">ホームへ</button></div>
+    </section>
+
+    <section id="screen-pause" class="screen overlay-screen">
+      <div class="pause-panel"><p class="eyebrow">PAUSED</p><h2>一時停止中</h2><button class="btn primary" id="resumeBtn">再開</button><button class="text-button" id="quitBtn">ゲームを終了</button></div>
+    </section>
+  </main>
+  <footer>KEY//BREAK <span>VER.ALPHA.1</span></footer>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
