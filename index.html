@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101722">
   <title>KEY//BREAK - 鍵開けミニゲーム集</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
@@ -105,7 +106,33 @@
       <div class="pause-panel"><p class="eyebrow">PAUSED</p><h2>一時停止中</h2><button type="button" class="btn primary" id="resumeBtn">再開</button><button type="button" class="text-button" id="quitBtn">ゲームを終了</button></div>
     </section>
   </main>
-  <footer>KEY//BREAK <span>VER.ALPHA.1</span></footer>
-  <script type="module" src="./js/main.js"></script>
+  <footer>KEY//BREAK <span>VER.ALPHA.1.3</span></footer>
+  <noscript><div class="boot-error" style="display:block">JavaScriptを有効にしてください。</div></noscript>
+  <div id="boot-error" class="boot-error" role="alert"></div>
+  <script>
+    // 読み込み失敗・実行時エラーを画面に表示する(原因をコンソールだけでなく画面にも出す)
+    (function () {
+      var box = document.getElementById("boot-error");
+      function show(msg) { box.style.display = "block"; box.textContent = "[KEY//BREAK ERROR] " + msg; }
+      window.addEventListener("error", function (e) {
+        if (e.target && e.target !== window && e.target.src) show("スクリプトを読み込めません: " + e.target.src);
+        else show(e.message + (e.filename ? " (" + e.filename.split("/").pop() + ":" + e.lineno + ")" : ""));
+      }, true);
+      window.addEventListener("unhandledrejection", function (e) { show(String(e.reason)); });
+    })();
+  </script>
+  <!-- クラシックスクリプト: file:// 直接起動でもGitHub Pagesでも動作する。順序が依存関係。 -->
+  <script src="./js/core/config.js"></script>
+  <script src="./js/core/difficulty.js"></script>
+  <script src="./js/core/gameTimer.js"></script>
+  <script src="./js/core/storage.js"></script>
+  <script src="./js/core/workspace.js"></script>
+  <script src="./js/ui/screenManager.js"></script>
+  <script src="./js/modes/singleGame.js"></script>
+  <script src="./js/modes/randomGame.js"></script>
+  <script src="./js/games/picking.js"></script>
+  <script src="./js/games/pendulumLock.js"></script>
+  <script src="./js/core/gameManager.js"></script>
+  <script src="./js/main.js"></script>
 </body>
 </html>

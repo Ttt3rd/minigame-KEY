@@ -1,5 +1,5 @@
-import { createWorkspace } from '../core/workspace.js';
-
+(function (KB) {
+  "use strict";
 const wrapAngle = value => ((value % 360) + 360) % 360;
 const angleDistance = (a, b) => Math.abs((((a - b) + 540) % 360) - 180);
 
@@ -19,7 +19,7 @@ function randomDifferent(previous, min, max, minChange) {
   return ranges[ranges.length - 1][1];
 }
 
-export function mountPendulum(root, ctx) {
+KB.mountPendulum = function (root, ctx) {
   let progress = 0;
   let done = false;
   let phase = Math.asin(0); // Start at the center and move toward one end.
@@ -42,7 +42,7 @@ export function mountPendulum(root, ctx) {
     <small id="unlockText">解除度 0%</small>
   </div>`;
 
-  createWorkspace(root, content, {
+  KB.createWorkspace(root, content, {
     onClick() {
       if (done || ctx.isPaused?.()) return;
       const needleAngle = wrapAngle(currentAmplitude * Math.sin(phase));
@@ -92,7 +92,11 @@ export function mountPendulum(root, ctx) {
     root.querySelector('#needle').style.transform = `translate(-50%,-100%) rotate(${angle}deg)`;
     raf = requestAnimationFrame(frame);
   };
-  root.querySelector('#meterZone').style.transform = `rotate(${zoneCenter}deg)`;
+  const zoneEl = root.querySelector('#meterZone');
+  const zw = ctx.config.zoneWidth;
+  zoneEl.style.background = `conic-gradient(from ${-zw / 2}deg, #52e0d0 0deg ${zw}deg, transparent ${zw}deg)`;
+  zoneEl.style.transform = `rotate(${zoneCenter}deg)`;
   raf = requestAnimationFrame(frame);
   return () => cancelAnimationFrame(raf);
-}
+};
+})(window.KB = window.KB || {});
