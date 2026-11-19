@@ -1,7 +1,7 @@
 import { createWorkspace } from '../core/workspace.js';
 
 const wrapAngle = value => ((value % 360) + 360) % 360;
-const angleDistance = (a, b) => Math.abs((((a - b) + 540) % 360) - 180);
+const angleDistance = (a, b) => Math.abs((((a - b) + 540) % 360) - 180);\nconst isInsideZone = (needle, center, width) => angleDistance(wrapAngle(needle), wrapAngle(center)) <= width / 2;
 
 // Sample a value inside [min, max], at least minChange away from previous.
 function randomDifferent(previous, min, max, minChange) {
@@ -28,10 +28,8 @@ export function mountPendulum(root, ctx) {
   let currentSpeed = ctx.config.needleSpeed;
   let targetSpeed = currentSpeed;
   let zoneCenter = ctx.config.zoneStart;
-  let successes = 0;
   let last = performance.now();
   let raf = 0;
-  let zoneTransition = 0;
   const amplitudeMin = ctx.config.amplitudeMin;
   const amplitudeMax = ctx.config.amplitudeMax;
 
@@ -42,14 +40,14 @@ export function mountPendulum(root, ctx) {
     <small id="unlockText">解除度 0%</small>
   </div>`;
 
-  createWorkspace(root, content, {
+  const workspaceApi = createWorkspace(root, content, {
     onClick() {
       if (done || ctx.isPaused?.()) return;
       const needleAngle = wrapAngle(currentAmplitude * Math.sin(phase));
-      if (angleDistance(needleAngle, wrapAngle(zoneCenter)) <= ctx.config.zoneWidth / 2) {
-        const diff = angleDistance(needleAngle, wrapAngle(zoneCenter));
+      const effectiveWidth = ctx.config.zoneWidth + 2 * (ctx.config.zoneInputTolerance || 0);
+      if (isInsideZone(needleAngle, zoneCenter, effectiveWidth)) {
+        const diff = angleDistance(needleAngle, zoneCenter);
         progress = Math.min(100, progress + ctx.config.gain + (diff < ctx.config.zoneWidth * ctx.config.centerBonusRatio ? ctx.config.centerBonus : 0));
-        successes++;
         if (progress >= 100) {
           done = true;
           ctx.onSuccess(100);
@@ -64,13 +62,11 @@ export function mountPendulum(root, ctx) {
           targetAmplitude, amplitudeMin, amplitudeMax, ctx.config.amplitudeMinChange
         );
         const reachableAmplitude = Math.min(currentAmplitude, targetAmplitude);
-        const maxCenter = Math.max(0, reachableAmplitude - ctx.config.zoneWidth / 2 - ctx.config.zoneReachMargin);
+        const maxCenter = Math.max(0, reachableAmplitude - effectiveWidth / 2 - ctx.config.zoneReachMargin);
         zoneCenter = randomDifferent(
           zoneCenter, -maxCenter, maxCenter, Math.min(ctx.config.zoneMinChange, maxCenter)
         );
-        const zone = root.querySelector('#meterZone');
-        zone.style.transition = `transform ${ctx.config.zoneTransitionMs}ms ease`;
-        zone.style.transform = `rotate(${zoneCenter}deg)`;
+        renderZone();
       } else {
         progress = Math.max(0, progress - ctx.config.missLoss);
       }
@@ -92,7 +88,17 @@ export function mountPendulum(root, ctx) {
     root.querySelector('#needle').style.transform = `translate(-50%,-100%) rotate(${angle}deg)`;
     raf = requestAnimationFrame(frame);
   };
-  root.querySelector('#meterZone').style.transform = `rotate(${zoneCenter}deg)`;
+  function renderZone() {
+    const zone = root.querySelector('#meterZone');
+    const width = ctx.config.zoneWidth + 2 * (ctx.config.zoneInputTolerance || 0);
+    zone.style.setProperty('--zone-start', `${wrapAngle(zoneCenter - width / 2)}deg`);
+    zone.style.setProperty('--zone-width', `${width}deg`);
+  }
+  renderZone();
   raf = requestAnimationFrame(frame);
-  return () => cancelAnimationFrame(raf);
+  return () => {
+    done = true;
+    cancelAnimationFrame(raf);
+    workspaceApi.destroy();
+  };
 }
